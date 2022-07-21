@@ -151,15 +151,20 @@ namespace TownOfHost
             killer.ProtectPlayer(target, colorId);
             killer.MurderPlayer(target);
             // Other Clients
-            var sender = CustomRpcSender.Create("GuardAndKill Sender", SendOption.None);
-            sender.AutoStartRpc(killer.NetId, (byte)RpcCalls.ProtectPlayer)
-                  .WriteNetObject((InnerNetObject)target)
-                  .Write(colorId)
-                  .EndRpc();
-            sender.AutoStartRpc(killer.NetId, (byte)RpcCalls.MurderPlayer)
-                  .WriteNetObject((InnerNetObject)target)
-                  .EndRpc();
-            sender.SendMessage();
+            if (killer.PlayerId != 0)
+            {
+                var sender = CustomRpcSender.Create("GuardAndKill Sender", SendOption.Reliable);
+                sender.StartMessage(killer.GetClientId());
+                sender.StartRpc(killer.NetId, (byte)RpcCalls.ProtectPlayer)
+                    .WriteNetObject((InnerNetObject)target)
+                    .Write(colorId)
+                    .EndRpc();
+                sender.StartRpc(killer.NetId, (byte)RpcCalls.MurderPlayer)
+                    .WriteNetObject((InnerNetObject)target)
+                    .EndRpc();
+                sender.EndMessage();
+                sender.SendMessage();
+            }
             Main.BlockKilling[killer.PlayerId] = false;
         }
         public static void RpcSpecificMurderPlayer(this PlayerControl killer, PlayerControl target = null)
@@ -355,12 +360,14 @@ namespace TownOfHost
                                 if (targetplayers.Count >= 1)
                                 {
                                     PlayerControl target = targetplayers[rand.Next(0, targetplayers.Count)];
-                                    //Logger.SendInGame("スピードブースターの相手:"+target.cosmetics.nameText.text);
+                                    Logger.Info("スピードブースト先:" + target.cosmetics.nameText.text, "SpeedBooster");
                                     Main.SpeedBoostTarget.Add(player.PlayerId, target.PlayerId);
                                 }
                                 else
                                 {
                                     Main.SpeedBoostTarget.Add(player.PlayerId, 255);
+                                    Logger.SendInGame("スピードブースト先がnullです。\nログを保存し、バグ報告チケットを作成してください。");
+                                    Logger.Warn("スピードブースト先がnullです。", "SpeedBooster");
                                 }
                             }
                             if (Main.SpeedBoostTarget.ContainsValue(player.PlayerId))
@@ -602,7 +609,7 @@ namespace TownOfHost
 
             return pc.GetCustomRole() switch
             {
-                CustomRoles.Mafia => Main.AliveImpostorCount <= 1 && canUse,
+                CustomRoles.Mafia => Utils.CanMafiaKill() && canUse,
                 CustomRoles.Mare => Utils.IsActive(SystemTypes.Electrical),
                 CustomRoles.FireWorks => FireWorks.CanUseKillButton(pc),
                 CustomRoles.Sniper => Sniper.CanUseKillButton(pc),
@@ -639,9 +646,11 @@ namespace TownOfHost
         public static void ExiledSchrodingerCatTeamChange(this PlayerControl player)
         {
             var rand = new System.Random();
-            System.Collections.Generic.List<CustomRoles> RandSchrodinger = new();
-            RandSchrodinger.Add(CustomRoles.CSchrodingerCat);
-            RandSchrodinger.Add(CustomRoles.MSchrodingerCat);
+            List<CustomRoles> RandSchrodinger = new()
+            {
+                CustomRoles.CSchrodingerCat,
+                CustomRoles.MSchrodingerCat
+            };
             foreach (var pc in PlayerControl.AllPlayerControls)
                 if (CustomRoles.Egoist.IsEnable() && pc.Is(CustomRoles.Egoist) && !pc.Data.IsDead)
                     RandSchrodinger.Add(CustomRoles.EgoSchrodingerCat);
@@ -696,7 +705,7 @@ namespace TownOfHost
         public static bool IsDouseDone(this PlayerControl player)
         {
             if (!player.Is(CustomRoles.Arsonist)) return false;
-            var count = Utils.getDousedPlayerCount(player.PlayerId);
+            var count = Utils.GetDousedPlayerCount(player.PlayerId);
             return count.Item1 == count.Item2;
         }
         public static bool CanMakeMadmate(this PlayerControl player)
@@ -704,7 +713,7 @@ namespace TownOfHost
             return Options.CanMakeMadmateCount.GetInt() > Main.SKMadmateNowCount
                     && player != null
                     && player.Data.Role.Role == RoleTypes.Shapeshifter
-                    && !player.Is(CustomRoles.Warlock) && !player.Is(CustomRoles.FireWorks) && !player.Is(CustomRoles.Sniper);
+                    && !player.Is(CustomRoles.Warlock) && !player.Is(CustomRoles.FireWorks) && !player.Is(CustomRoles.Sniper) && !player.Is(CustomRoles.BountyHunter);
         }
         public static void ResetThiefVotingTime(this PlayerControl thief)
         {
