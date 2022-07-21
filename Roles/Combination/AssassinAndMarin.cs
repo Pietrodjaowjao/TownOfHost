@@ -90,14 +90,17 @@ namespace TownOfHost
             Logger.Info("アサシン会議開始", "Special Phase");
             new LateTask(() =>
             {
-                byte reactorId = 3;
-                if (PlayerControl.GameOptions.MapId == 2) reactorId = 21;
-                ShipStatus.Instance.RpcRepairSystem(SystemTypes.Reactor, 128);
-                MessageWriter SabotageWriter = AmongUsClient.Instance.StartRpcImmediately(ShipStatus.Instance.NetId, (byte)RpcCalls.RepairSystem, SendOption.Reliable, -1);
-                SabotageWriter.Write(reactorId);
-                MessageExtensions.WriteNetObject(SabotageWriter, PlayerControl.LocalPlayer);
-                SabotageWriter.Write((byte)128);
-                AmongUsClient.Instance.FinishRpcImmediately(SabotageWriter);
+                if (!GameStates.IsMeeting)
+                {
+                    byte reactorId = 3;
+                    if (PlayerControl.GameOptions.MapId == 2) reactorId = 21;
+                    ShipStatus.Instance.RpcRepairSystem(SystemTypes.Reactor, 128);
+                    MessageWriter SabotageWriter = AmongUsClient.Instance.StartRpcImmediately(ShipStatus.Instance.NetId, (byte)RpcCalls.RepairSystem, SendOption.Reliable, -1);
+                    SabotageWriter.Write(reactorId);
+                    MessageExtensions.WriteNetObject(SabotageWriter, PlayerControl.LocalPlayer);
+                    SabotageWriter.Write((byte)128);
+                    AmongUsClient.Instance.FinishRpcImmediately(SabotageWriter);
+                }
             }, 2f, "AssassinMeetingSabotageNotify");
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
