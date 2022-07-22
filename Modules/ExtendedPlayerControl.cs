@@ -304,16 +304,16 @@ namespace TownOfHost
             {
                 case CustomRoles.Terrorist:
                     goto InfinityVent;
-                case CustomRoles.ShapeMaster:
-                    opt.RoleOptions.ShapeshifterCooldown = 0.1f;
-                    opt.RoleOptions.ShapeshifterLeaveSkin = false;
-                    opt.RoleOptions.ShapeshifterDuration = Options.ShapeMasterShapeshiftDuration.GetFloat();
-                    break;
+                // case CustomRoles.ShapeMaster:
+                //     opt.RoleOptions.ShapeshifterCooldown = 0.1f;
+                //     opt.RoleOptions.ShapeshifterLeaveSkin = false;
+                //     opt.RoleOptions.ShapeshifterDuration = Options.ShapeMasterShapeshiftDuration.GetFloat();
+                //     break;
                 case CustomRoles.Warlock:
                     opt.RoleOptions.ShapeshifterCooldown = Main.isCursed ? 1f : Options.DefaultKillCooldown;
                     break;
                 case CustomRoles.SerialKiller:
-                    opt.RoleOptions.ShapeshifterCooldown = Options.SerialKillerLimit.GetFloat();
+                    SerialKiller.ApplyGameOptions(opt);
                     break;
                 case CustomRoles.BountyHunter:
                     opt.RoleOptions.ShapeshifterCooldown = Options.BountyTargetChangeTime.GetFloat();
@@ -663,7 +663,7 @@ namespace TownOfHost
             switch (player.GetCustomRole())
             {
                 case CustomRoles.SerialKiller:
-                    Main.AllPlayerKillCooldown[player.PlayerId] = Options.SerialKillerCooldown.GetFloat(); //シリアルキラーはシリアルキラーのキルクールに。
+                    SerialKiller.ApplyKillCooldown(player.PlayerId); //シリアルキラーはシリアルキラーのキルクールに。
                     break;
                 case CustomRoles.Arsonist:
                     Main.AllPlayerKillCooldown[player.PlayerId] = Options.ArsonistCooldown.GetFloat(); //アーソニストはアーソニストのキルクールに。

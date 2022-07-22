@@ -46,7 +46,7 @@ namespace TownOfHost
             switch (player.GetCustomRole())
             {
                 case CustomRoles.Sniper:
-                    __instance.AbilityButton.OverrideText($"{GetString("SniperSnipeButtonText")}");
+                    __instance.AbilityButton.OverrideText(Sniper.OverrideShapeText(player.PlayerId));
                     break;
                 case CustomRoles.FireWorks:
                     if (FireWorks.nowFireWorksCount[player.PlayerId] == 0)
@@ -55,7 +55,7 @@ namespace TownOfHost
                         __instance.AbilityButton.OverrideText($"{GetString("FireWorksInstallAtionButtonText")}");
                     break;
                 case CustomRoles.SerialKiller:
-                    __instance.AbilityButton.OverrideText($"{GetString("SerialKillerSuicideButtonText")}");
+                    SerialKiller.GetAbilityButtonText(__instance);
                     break;
                 case CustomRoles.Warlock:
                     if (!Main.CheckShapeshift[player.PlayerId] && !Main.isCurseAndKill[player.PlayerId])

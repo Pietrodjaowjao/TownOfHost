@@ -452,6 +452,7 @@ VampireBiteButtonText,Bite,噛む
 ArsonistDouseButtonText,Douse,塗る
 PuppeteerOperateButtonText,Operate,操る
 BountyHunterChangeButtonText,Change,変更
+DefaultShapeshiftText,SHIFT,変身
 WhoIsMarin,Who is the Marin?,マーリンは誰だ？
 WritePlayerName,Write player name,プレイヤー名を打て
 WasMarin,{0} was the {1},{0}は{1}だった
