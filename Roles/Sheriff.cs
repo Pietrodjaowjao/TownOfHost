@@ -18,6 +18,7 @@ namespace TownOfHost
         private static CustomOption CanKillEgoist;
         private static CustomOption CanKillEgoShrodingerCat;
         private static CustomOption CanKillExecutioner;
+        public static CustomOption CanKillAssassin;
         private static CustomOption CanKillCrewmatesAsIt;
         private static CustomOption ShotLimitOpt;
 
@@ -27,6 +28,7 @@ namespace TownOfHost
         {
             Options.SetupRoleOptions(Id, CustomRoles.Sheriff);
             KillCooldown = CustomOption.Create(Id + 10, Color.white, "SheriffKillCooldown", 30, 0, 990, 1, Options.CustomRoleSpawnChances[CustomRoles.Sheriff]);
+            CanKillAssassin = CustomOption.Create(Id + 21, Color.white, "SheriffCanKillAssassin", true, Options.CustomRoleSpawnChances[CustomRoles.Sheriff]);
             CanKillArsonist = CustomOption.Create(Id + 17, Color.white, "SheriffCanKillArsonist", true, Options.CustomRoleSpawnChances[CustomRoles.Sheriff]);
             CanKillMadmate = CustomOption.Create(Id + 11, Color.white, "SheriffCanKillMadmate", true, Options.CustomRoleSpawnChances[CustomRoles.Sheriff]);
             CanKillJester = CustomOption.Create(Id + 12, Color.white, "SheriffCanKillJester", true, Options.CustomRoleSpawnChances[CustomRoles.Sheriff]);
