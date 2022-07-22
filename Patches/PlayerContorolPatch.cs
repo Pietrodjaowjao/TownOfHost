@@ -115,11 +115,14 @@ namespace TownOfHost
             switch (target.GetCustomRole())
             {
                 case CustomRoles.Assassin:
-                    if (!canDirectKill || (killer.Is(CustomRoles.Sheriff) && !Sheriff.CanKillAssassin.GetBool())) break;
-                    Assassin.TriggerPlayerName = target.Data.PlayerName;
-                    Assassin.SendTriggerPlayerInfo(target.PlayerId);
-                    Assassin.BootAssassinTrigger(target, BeKilled: true);
-                    return false;
+                    if (canDirectKill)
+                    {
+                        if (killer.Is(CustomRoles.Sheriff) && Sheriff.CanKillAssassin.GetBool())
+                            return false;
+                        else if (!killer.Is(CustomRoles.Sheriff))
+                            return false;
+                    }
+                    break;
                 case CustomRoles.SchrodingerCat:
                     //シュレディンガーの猫が切られた場合の役職変化スタート
                     //直接キル出来る役職チェック
